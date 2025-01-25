@@ -1,13 +1,14 @@
-// src/components/ProductList.jsx
 import React, { useEffect, useState } from 'react';
 import { fetchProducts } from '../services/api';
 import { Link } from 'react-router-dom';
 import { useCart } from '../CartContext'; 
-import './ProductList.css'; // Import the CSS file
+import { useAuth } from '../AuthContext'; 
+import './ProductList.css'; 
 
 const ProductList = () => {
     const [products, setProducts] = useState([]);
     const { addToCart } = useCart();
+    const { isAuthenticated } = useAuth(); 
 
     useEffect(() => {
         const getProducts = async () => {
@@ -16,6 +17,14 @@ const ProductList = () => {
         };
         getProducts();
     }, []);
+
+    const handleAddToCart = (product) => {
+        if (isAuthenticated) {
+            addToCart(product);
+        } else {
+            alert('You need to be logged in to add items to the cart.'); 
+        }
+    };
 
     return (
         <div className="product-list">
@@ -26,7 +35,7 @@ const ProductList = () => {
                         <h2 className="product-title">{product.title}</h2>
                         <p className="product-price">${product.price}</p>
                     </Link>
-                    <button className="add-to-cart" onClick={() => addToCart(product)}>Add to Cart</button>
+                    <button className="add-to-cart" onClick={() => handleAddToCart(product)}>Add to Cart</button>
                 </div>
             ))}
         </div>
